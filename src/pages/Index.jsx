@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Box, Container, Flex, Heading, Link, Text, VStack, HStack, Divider, Input, Textarea, Button } from "@chakra-ui/react";
-import { FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
+import { Box, Container, Flex, Heading, Link, Text, VStack, HStack, Divider, Input, Textarea, Button, useColorMode, IconButton, useColorModeValue } from "@chakra-ui/react";
+import { FaTwitter, FaFacebook, FaInstagram, FaSun, FaMoon } from "react-icons/fa";
 
 const Index = () => {
   const [posts, setPosts] = useState([
@@ -21,8 +21,12 @@ const Index = () => {
     setNewPost({ title: "", date: "", content: "" });
   };
 
+  const { colorMode, toggleColorMode } = useColorMode();
+  const bg = useColorModeValue("gray.100", "gray.900");
+  const color = useColorModeValue("black", "white");
+
   return (
-    <Container maxW="container.xl" p={4}>
+    <Container maxW="container.xl" p={4} bg={bg} color={color}>
       {/* Navigation Bar */}
       <Flex as="nav" bg="gray.800" color="white" p={4} justifyContent="space-between" alignItems="center">
         <Heading as="h1" size="lg">My Blog</Heading>
@@ -30,6 +34,13 @@ const Index = () => {
           <Link href="#" color="white">Home</Link>
           <Link href="#" color="white">About</Link>
           <Link href="#" color="white">Contact</Link>
+          <IconButton
+            aria-label="Toggle dark mode"
+            icon={colorMode === "light" ? <FaMoon /> : <FaSun />}
+            onClick={toggleColorMode}
+            variant="ghost"
+            color="current"
+          />
         </HStack>
       </Flex>
 
