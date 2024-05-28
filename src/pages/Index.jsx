@@ -1,7 +1,26 @@
-import { Box, Container, Flex, Heading, Link, Text, VStack, HStack, Divider } from "@chakra-ui/react";
+import { useState } from "react";
+import { Box, Container, Flex, Heading, Link, Text, VStack, HStack, Divider, Input, Textarea, Button } from "@chakra-ui/react";
 import { FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
 
 const Index = () => {
+  const [posts, setPosts] = useState([
+    { title: "Blog Post Title 1", date: "January 1, 2023", content: "This is a short description of the blog post content..." },
+    { title: "Blog Post Title 2", date: "February 1, 2023", content: "This is a short description of the blog post content..." },
+  ]);
+
+  const [newPost, setNewPost] = useState({ title: "", date: "", content: "" });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewPost({ ...newPost, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setPosts([...posts, newPost]);
+    setNewPost({ title: "", date: "", content: "" });
+  };
+
   return (
     <Container maxW="container.xl" p={4}>
       {/* Navigation Bar */}
@@ -19,16 +38,13 @@ const Index = () => {
         {/* Blog Posts Section */}
         <Box flex="3" mr={{ md: 4 }}>
           <VStack spacing={8} align="stretch">
-            <Box p={4} shadow="md" borderWidth="1px">
-              <Heading as="h2" size="md">Blog Post Title 1</Heading>
-              <Text fontSize="sm" color="gray.500">January 1, 2023</Text>
-              <Text mt={2}>This is a short description of the blog post content...</Text>
-            </Box>
-            <Box p={4} shadow="md" borderWidth="1px">
-              <Heading as="h2" size="md">Blog Post Title 2</Heading>
-              <Text fontSize="sm" color="gray.500">February 1, 2023</Text>
-              <Text mt={2}>This is a short description of the blog post content...</Text>
-            </Box>
+            {posts.map((post, index) => (
+              <Box key={index} p={4} shadow="md" borderWidth="1px">
+                <Heading as="h2" size="md">{post.title}</Heading>
+                <Text fontSize="sm" color="gray.500">{post.date}</Text>
+                <Text mt={2}>{post.content}</Text>
+              </Box>
+            ))}
           </VStack>
         </Box>
 
@@ -36,12 +52,40 @@ const Index = () => {
         <Box flex="1" mt={{ base: 8, md: 0 }}>
           <Heading as="h3" size="md" mb={4}>Recent Posts</Heading>
           <VStack spacing={4} align="stretch">
-            <Link href="#" color="blue.500">Recent Post 1</Link>
-            <Link href="#" color="blue.500">Recent Post 2</Link>
-            <Link href="#" color="blue.500">Recent Post 3</Link>
+            {posts.slice(0, 3).map((post, index) => (
+              <Link key={index} href="#" color="blue.500">{post.title}</Link>
+            ))}
           </VStack>
         </Box>
       </Flex>
+
+      {/* Add New Post Form */}
+      <Box mt={8}>
+        <Heading as="h3" size="md" mb={4}>Add New Post</Heading>
+        <form onSubmit={handleSubmit}>
+          <VStack spacing={4} align="stretch">
+            <Input
+              placeholder="Title"
+              name="title"
+              value={newPost.title}
+              onChange={handleInputChange}
+            />
+            <Input
+              placeholder="Date"
+              name="date"
+              value={newPost.date}
+              onChange={handleInputChange}
+            />
+            <Textarea
+              placeholder="Content"
+              name="content"
+              value={newPost.content}
+              onChange={handleInputChange}
+            />
+            <Button type="submit" colorScheme="blue">Add Post</Button>
+          </VStack>
+        </form>
+      </Box>
 
       {/* Footer */}
       <Box as="footer" mt={8} py={4} bg="gray.800" color="white">
