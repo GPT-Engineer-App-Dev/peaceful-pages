@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Container, Flex, Heading, Link, Text, VStack, HStack, Divider, Input, Textarea, Button, useColorMode, IconButton, useColorModeValue } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Link, Text, VStack, HStack, Divider, Input, Textarea, Button, useColorMode, IconButton, useColorModeValue, useToast } from "@chakra-ui/react";
 import { FaTwitter, FaFacebook, FaInstagram, FaSun, FaMoon } from "react-icons/fa";
 
 const Index = () => {
@@ -9,6 +9,8 @@ const Index = () => {
   ]);
 
   const [newPost, setNewPost] = useState({ title: "", date: "", content: "" });
+  const [postToDelete, setPostToDelete] = useState(null);
+  const toast = useToast();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,6 +21,25 @@ const Index = () => {
     e.preventDefault();
     setPosts([...posts, newPost]);
     setNewPost({ title: "", date: "", content: "" });
+  };
+
+  const handleDelete = (index) => {
+    setPosts(posts.filter((_, i) => i !== index));
+    toast({
+      title: "Post deleted.",
+      description: "The blog post has been deleted successfully.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+  };
+
+  const confirmDelete = (index) => {
+    setPostToDelete(index);
+  };
+
+  const cancelDelete = () => {
+    setPostToDelete(null);
   };
 
   const { colorMode, toggleColorMode } = useColorMode();
@@ -51,9 +72,14 @@ const Index = () => {
           <VStack spacing={8} align="stretch">
             {posts.map((post, index) => (
               <Box key={index} p={4} shadow="md" borderWidth="1px">
-                <Heading as="h2" size="md">{post.title}</Heading>
-                <Text fontSize="sm" color="gray.500">{post.date}</Text>
-                <Text mt={2}>{post.content}</Text>
+                <Flex justifyContent="space-between" alignItems="center">
+                  <Box>
+                    <Heading as="h2" size="md">{post.title}</Heading>
+                    <Text fontSize="sm" color="gray.500">{post.date}</Text>
+                    <Text mt={2}>{post.content}</Text>
+                  </Box>
+                  <Button colorScheme="red" onClick={() => confirmDelete(index)}>Delete</Button>
+                </Flex>
               </Box>
             ))}
           </VStack>
@@ -109,6 +135,19 @@ const Index = () => {
         </Flex>
         <Text textAlign="center">© 2023 My Blog. All rights reserved.</Text>
       </Box>
+
+      {/* Delete Confirmation Modal */}
+      {postToDelete !== null && (
+        <Box position="fixed" top="0" left="0" width="100vw" height="100vh" bg="rgba(0, 0, 0, 0.5)" display="flex" justifyContent="center" alignItems="center">
+          <Box bg="white" p={6} rounded="md" shadow="md">
+            <Text mb={4}>Are you sure you want to delete this post?</Text>
+            <Flex justifyContent="space-between">
+              <Button colorScheme="red" onClick={() => handleDelete(postToDelete)}>Yes</Button>
+              <Button onClick={cancelDelete}>No</Button>
+            </Flex>
+          </Box>
+        </Box>
+      )}
     </Container>
   );
 };
